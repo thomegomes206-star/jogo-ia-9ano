@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>IA EXTREME • 9º ANO — Impactos da Inteligência Artificial</title>
+<style>
+:root{--bg:#061b17;--card:#0c2b25;--line:#2c806c;--gold:#f4b51b;--green:#16c784;--text:#f5fff9;--muted:#b9d8cf}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#10483d 0,#061b17 55%,#03100d 100%);color:var(--text);font-family:Arial,Helvetica,sans-serif}.wrap{max-width:1250px;margin:auto;padding:18px}
+.card{background:#0b2924ee;border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 12px 35px #0008}
+h1{margin:0;text-align:center;font-size:35px}.sub{text-align:center;color:var(--muted);margin:7px 0 18px}.setup{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.setup label{font-weight:700}.setup input{width:100%;margin-top:6px;padding:12px;border:1px solid #478e7c;border-radius:10px;background:#071e19;color:white;font-size:16px}
+.btn{border:0;border-radius:11px;padding:12px 17px;font-size:15px;font-weight:800;cursor:pointer;background:#3c8cff;color:white}.btn:disabled{opacity:.45;cursor:not-allowed}.start{width:100%;margin-top:14px;background:var(--green);color:#05251c}.hidden{display:none}
+.top{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}.turn{font-size:19px}.rule{font-size:13px;color:var(--muted)}.scores{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.score{padding:9px 12px;border:1px solid #286958;border-radius:10px;background:#071e1a}.active{outline:3px solid var(--gold)}
+.dot{width:14px;height:14px;border:2px solid white;border-radius:50%;display:inline-block;vertical-align:-2px;margin-right:5px}.c0{background:#ff5252}.c1{background:#4da3ff}.c2{background:#ffd43b}.c3{background:#d66cff}
+.board{display:grid;grid-template-columns:repeat(10,1fr);gap:5px;padding:8px;background:#063f34;border:1px solid #24725f;border-radius:14px;margin-top:17px}.cell{min-height:68px;background:#edf4e9;color:#123b31;border-radius:9px;position:relative;padding:5px;text-align:center;font-weight:800;font-size:12px}.cell:nth-child(4n){background:#f3d95c}.cell:nth-child(4n+1){background:#e95454;color:white}.cell.special{box-shadow:inset 0 0 0 3px var(--gold)}.cell.finish{background:var(--gold)}.pieces{position:absolute;bottom:3px;left:2px;right:2px;display:flex;justify-content:center;flex-wrap:wrap;gap:2px}.piece{width:21px;height:21px;border-radius:50%;border:2px solid white;display:flex;justify-content:center;align-items:center;color:#111;font-size:10px;box-shadow:0 1px 3px #0008}.legend{text-align:center;color:var(--muted);font-size:12px;margin-top:7px}
+.question{margin-top:16px}.tags{display:flex;gap:6px;flex-wrap:wrap}.tag{background:#7048e8;padding:7px 11px;border-radius:20px;font-size:12px;font-weight:800}.pts{background:#b77800}.question h2{font-size:22px;line-height:1.4}.answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}.answer{background:#103c33!important;border:1px solid #2e806c!important;text-align:left;min-height:58px;height:58px;display:flex;align-items:flex-start;line-height:1.3}.answer:hover:not(:disabled){background:#185747!important}.answer{overflow:hidden}.feedback{margin-top:12px;padding:13px;border:1px solid #2b6f60;border-radius:11px;background:#071e1a;line-height:1.5}.next{margin-top:10px;background:var(--green);color:#04231b}.dice{text-align:center;margin-top:12px}.die{font-size:50px;min-height:62px}.podium{text-align:center}.rank{display:flex;justify-content:space-between;padding:13px;border-bottom:1px solid #245c4e;font-size:18px}
+@media(max-width:760px){.setup{grid-template-columns:1fr 1fr}.answers{grid-template-columns:1fr}.board{grid-template-columns:repeat(5,1fr)}.cell{min-height:58px}h1{font-size:28px}}
+@media(max-width:440px){.setup{grid-template-columns:1fr}.cell{min-height:50px;font-size:10px}.piece{width:18px;height:18px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<section id="setup" class="card">
+<h1>🤖 IA EXTREME • 9º ANO</h1>
+<div class="sub">Inteligência Artificial • tecnologia • impactos socioambientais • ética • sociedade</div>
+<p><b>Meta:</b> primeiro jogador a chegar a <b>200 pontos</b>. Acertou → joga o dado e avança. Errou → <b>volta 1 casa</b>.</p>
+<p class="rule">⚠️ As alternativas são embaralhadas a cada pergunta e a posição da resposta correta é balanceada entre A, B, C e D. Não existe padrão previsível.</p>
+<div class="setup">
+<label>Jogador 1<input id="n0" placeholder="Nome"></label>
+<label>Jogador 2<input id="n1" placeholder="Nome"></label>
+<label>Jogador 3<input id="n2" placeholder="Nome"></label>
+<label>Jogador 4<input id="n3" placeholder="Nome"></label>
+</div>
+<button class="btn start" onclick="startGame()">🚀 COMEÇAR DESAFIO EXTREMO</button>
+</section>
+
+<section id="game" class="hidden">
+<div class="card">
+<div class="top"><div><div id="turn" class="turn"></div><div class="rule">🎯 Acerto: pontos + dado • ❌ Erro: -1 casa</div></div><button class="btn" onclick="restart()">↻ Reiniciar</button></div>
+<div id="scores" class="scores"></div>
+<div id="board" class="board"></div>
+<div class="legend">🔴🔵🟡🟣 = jogadores. As peças ficam dentro da casa atual.</div>
+</div>
+
+<div id="questionCard" class="card question">
+<div class="tags"><span id="category" class="tag"></span><span id="points" class="tag pts"></span></div>
+<h2 id="question"></h2>
+<div id="answers" class="answers"></div>
+<div id="feedback"></div>
+<div id="diceArea" class="dice hidden"><div class="rule">Resposta correta! Role o dado para avançar.</div><div id="die" class="die">🎲</div><button id="roll" class="btn" onclick="rollDice()">🎲 ROLAR DADO</button></div>
+</div>
+
+<div id="podium" class="card podium hidden"></div>
+</section>
+</div>
+
+<script>
+/*
+  IA EXTREME • 9º ANO
+  Correções:
+  - Alternativas são embaralhadas e a posição correta é balanceada A/B/C/D.
+  - Botões ficam bloqueados após resposta.
+  - O dado só pode ser usado uma vez por acerto.
+  - Não há avanço duplicado por duplo clique.
+  - As peças são redesenhadas após cada movimento.
+  - O turno só muda depois da resolução completa da rodada.
+  - O jogo termina imediatamente ao atingir 200 pontos.
+*/
+
+const QUESTIONS = [{"cat":"🤖 IA","q":"IA significa:","o":["Internet Avançada","Informação Automática","Interface Artificial","Inteligência Artificial"],"a":3,"p":20,"e":"Resposta correta: Inteligência Artificial."},{"cat":"⚡ Energia","q":"O uso de IA pode aumentar o consumo de:","o":["Energia elétrica","Petróleo bruto","Água do mar","Luz solar"],"a":0,"p":20,"e":"Resposta correta: Energia elétrica."},{"cat":"💧 Água","q":"Data centers podem usar água para:","o":["Internet","Resfriamento","Programação","Armazenamento"],"a":1,"p":20,"e":"Resposta correta: Resfriamento."},{"cat":"♻️ E-lixo","q":"O descarte incorreto de eletrônicos pode causar:","o":["Reciclagem","Evaporação","Poluição","Fotossíntese"],"a":2,"p":25,"e":"Resposta correta: Poluição."},{"cat":"🌎 Clima","q":"A geração de eletricidade com combustíveis fósseis pode liberar:","o":["O₂","H₂","He","CO₂"],"a":3,"p":25,"e":"Resposta correta: CO₂."},{"cat":"🏭 Produção","q":"A fabricação de chips depende de:","o":["Recursos naturais","Somente papel","Apenas madeira","Nenhum recurso"],"a":0,"p":25,"e":"Resposta correta: Recursos naturais."},{"cat":"🌱 Sustentabilidade","q":"Eficiência energética significa:","o":["Evitar computadores","Gastar menos energia por tarefa","Usar mais energia por tarefa","Desligar a internet"],"a":1,"p":20,"e":"Resposta correta: Gastar menos energia por tarefa."},{"cat":"🔥 Desafio","q":"Se o uso de uma IA cresce muito após ela ficar mais eficiente, o consumo total pode:","o":["Parar","Desaparecer","Aumentar","Zerar"],"a":2,"p":30,"e":"Resposta correta: Aumentar."},{"cat":"⚖️ Ética","q":"Um viés em IA pode causar:","o":["Mais memória","Menos internet","Maior bateria","Resultados injustos"],"a":3,"p":25,"e":"Resposta correta: Resultados injustos."},{"cat":"🔐 Privacidade","q":"Ao usar uma IA pública, é melhor evitar enviar:","o":["Senhas","Perguntas","Exercícios","Definições"],"a":0,"p":25,"e":"Resposta correta: Senhas."},{"cat":"🧠 Verificação","q":"Uma resposta de IA deve ser verificada porque ela pode:","o":["Desaparecer","Errar","Dormir","Quebrar"],"a":1,"p":20,"e":"Resposta correta: Errar."},{"cat":"📚 Escola","q":"Um uso responsável da IA na escola é:","o":["Inventar fontes","Ignorar o professor","Apoiar o estudo","Copiar trabalhos"],"a":2,"p":20,"e":"Resposta correta: Apoiar o estudo."},{"cat":"📰 Informação","q":"Uma notícia criada por IA deve ser:","o":["Compartilhada","Ignorada sempre","Aceita sempre","Verificada"],"a":3,"p":25,"e":"Resposta correta: Verificada."},{"cat":"👷 Trabalho","q":"A IA pode alterar profissões ao:","o":["Automatizar tarefas","Eliminar salários","Criar leis","Mudar escolas"],"a":0,"p":25,"e":"Resposta correta: Automatizar tarefas."},{"cat":"🏙️ Cidades","q":"A IA pode ajudar no trânsito por meio de:","o":["Mais combustível","Análise de dados","Mais congestionamentos","Menos semáforos"],"a":1,"p":25,"e":"Resposta correta: Análise de dados."},{"cat":"🚗 Transporte","q":"Uma rota otimizada pode reduzir:","o":["Baterias","Semáforos","Combustível","Internet"],"a":2,"p":20,"e":"Resposta correta: Combustível."},{"cat":"🌳 Agricultura","q":"Na agricultura, a IA pode ajudar a analisar:","o":["Cimento","Música","Trânsito aéreo","Plantações"],"a":3,"p":20,"e":"Resposta correta: Plantações."},{"cat":"🐝 Biodiversidade","q":"A IA pode ajudar pesquisadores a identificar:","o":["Espécies","Impostos","Salários","Senhas"],"a":0,"p":25,"e":"Resposta correta: Espécies."},{"cat":"🔋 Recursos","q":"Um equipamento eficiente realiza a mesma tarefa com:","o":["Mais água sempre","Menos energia","Mais energia","Mais lixo"],"a":1,"p":20,"e":"Resposta correta: Menos energia."},{"cat":"♻️ Reciclagem","q":"Uma forma de reduzir o lixo eletrônico é:","o":["Quebrar aparelhos","Descartar no rio","Reutilizar aparelhos","Trocar sempre"],"a":2,"p":20,"e":"Resposta correta: Reutilizar aparelhos."},{"cat":"🌐 Internet","q":"Uma imagem gerada por IA pode ser usada para:","o":["Reciclagem","Resfriamento","Eletricidade","Desinformação"],"a":3,"p":25,"e":"Resposta correta: Desinformação."},{"cat":"🤝 Decisões","q":"Em decisões importantes, a IA deve ser:","o":["Supervisionada","Inquestionável","Autônoma sempre","Oculta"],"a":0,"p":30,"e":"Resposta correta: Supervisionada."},{"cat":"📊 Dados","q":"Dados ruins podem produzir resultados:","o":["Mais rápidos","Menos confiáveis","Sempre melhores","Sempre iguais"],"a":1,"p":25,"e":"Resposta correta: Menos confiáveis."},{"cat":"🌱 Futuro","q":"Sustentabilidade considera também:","o":["Somente velocidade","Somente tecnologia","Futuras gerações","Somente lucro"],"a":2,"p":25,"e":"Resposta correta: Futuras gerações."},{"cat":"⚖️ Justiça","q":"Uma tecnologia pode gerar:","o":["Somente benefícios","Somente riscos","Nenhum efeito","Benefícios e riscos"],"a":3,"p":20,"e":"Resposta correta: Benefícios e riscos."},{"cat":"💻 Hardware","q":"Servidores antigos podem virar:","o":["Lixo eletrônico","Combustível","Água","Energia"],"a":0,"p":20,"e":"Resposta correta: Lixo eletrônico."},{"cat":"🏗️ Infraestrutura","q":"Data centers precisam de:","o":["Nenhum equipamento","Infraestrutura física","Somente internet","Apenas software"],"a":1,"p":20,"e":"Resposta correta: Infraestrutura física."},{"cat":"🌡️ Impacto","q":"Para avaliar uma IA, é melhor considerar:","o":["Só a velocidade","Só o tamanho","Vários impactos","Só o preço"],"a":2,"p":30,"e":"Resposta correta: Vários impactos."},{"cat":"🌍 Justiça ambiental","q":"Justiça ambiental analisa a distribuição de:","o":["Senhas e dados","Cabos e telas","Jogos e vídeos","Custos e benefícios"],"a":3,"p":30,"e":"Resposta correta: Custos e benefícios."},{"cat":"💡 Tecnologia","q":"Uma IA pode ajudar a economizar recursos ao:","o":["Otimizar processos","Aumentar desperdícios","Desligar sensores","Ignorar dados"],"a":0,"p":25,"e":"Resposta correta: Otimizar processos."},{"cat":"🧪 Avaliação","q":"Para avaliar uma informação de IA, é importante:","o":["Usar uma fonte qualquer","Comparar fontes","Aceitar rápido","Evitar fontes"],"a":1,"p":25,"e":"Resposta correta: Comparar fontes."},{"cat":"🎯 Desafio","q":"O impacto ambiental da IA depende do:","o":["Idioma usado","Formato da tela","Contexto de uso","Nome do modelo"],"a":2,"p":30,"e":"Resposta correta: Contexto de uso."},{"cat":"🏭 Ciclo de vida","q":"Uma análise ambiental pode incluir fabricação e:","o":["Login","Senha","Interface","Descarte"],"a":3,"p":30,"e":"Resposta correta: Descarte."},{"cat":"🤖 Automação","q":"Automatizar uma tarefa significa:","o":["Usar tecnologia para executá-la","Eliminar tecnologia","Desligar máquinas","Aumentar trabalho manual"],"a":0,"p":20,"e":"Resposta correta: Usar tecnologia para executá-la."},{"cat":"🌳 Ambiente","q":"Uma aplicação de IA ambiental pode monitorar:","o":["Jogos","Florestas","Senhas","Salários"],"a":1,"p":20,"e":"Resposta correta: Florestas."},{"cat":"🔥 Final","q":"Qual atitude combina com o uso responsável da IA?","o":["Compartilhar tudo","Ignorar impactos","Usar e verificar","Usar sem pensar"],"a":2,"p":30,"e":"Resposta correta: Usar e verificar."}];
+
+let players=[],turn=0,current=null,locked=false,used=new Set();
+
+const ICONS=["🔴","🔵","🟡","🟣"];
+const DICE=["⚀","⚁","⚂","⚃","⚄","⚅"];
+
+function startGame(){
+ players=[0,1,2,3].map(i=>({name:(document.getElementById("n"+i).value.trim()||"Jogador "+(i+1)),score:0,pos:0}));
+ turn=0;used.clear();document.getElementById("setup").classList.add("hidden");document.getElementById("game").classList.remove("hidden");render();nextQuestion();
+}
+function restart(){location.reload()}
+
+function render(){
+ document.getElementById("turn").innerHTML=`${ICONS[turn]} Vez de: <b>${escapeHtml(players[turn].name)}</b>`;
+ document.getElementById("scores").innerHTML=players.map((p,i)=>`<div class="score ${i===turn?"active":""}"><span class="dot c${i}"></span><b>${escapeHtml(p.name)}</b> — ⭐ ${p.score} pts — casa ${p.pos+1}</div>`).join("");
+ let out="";
+ for(let n=1;n<=80;n++){
+   const idx=n-1, special=[10,20,30,40,50,60,70].includes(n);
+   let pieces=players.map((p,i)=>p.pos===idx?`<span class="piece c${i}" title="${escapeHtml(p.name)}">${i+1}</span>`:"").join("");
+   out+=`<div class="cell ${special?"special ":""}${n===80?"finish":""}"><span>${n===80?"🏆":n}</span><div class="pieces">${pieces}</div></div>`;
+ }
+ document.getElementById("board").innerHTML=out;
+}
+function escapeHtml(s){return s.replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+
+function nextQuestion(){
+ if(players.some(p=>p.score>=200)){finish();return}
+ locked=false;current=null;document.getElementById("diceArea").classList.add("hidden");document.getElementById("feedback").innerHTML="";
+ const available=QUESTIONS.map((_,i)=>i).filter(i=>!used.has(i));
+ if(!available.length)used.clear();
+ const pool=available.length?available:QUESTIONS.map((_,i)=>i);
+ const id=pool[Math.floor(Math.random()*pool.length)];used.add(id);current=QUESTIONS[id];
+
+ document.getElementById("category").textContent=current.cat;
+ document.getElementById("points").textContent="+"+current.p+" pontos";
+ document.getElementById("question").textContent=current.q;
+
+ // Embaralhamento REAL: todas as quatro alternativas são misturadas.
+ // A posição da correta não segue sequência nem ciclo previsível.
+ const ordered=current.o.map((text,i)=>({text,correct:i===current.a}));
+ for(let i=ordered.length-1;i>0;i--){
+   const j=Math.floor(Math.random()*(i+1));
+   [ordered[i],ordered[j]]=[ordered[j],ordered[i]];
+ }
+ document.getElementById("answers").innerHTML=ordered.map((x,i)=>`<button class="btn answer" onclick="answer(${x.correct})">${String.fromCharCode(65+i)}) ${escapeHtml(compactOption(x.text))}</button>`).join("");
+}
+
+function compactOption(text){
+  // Keep answer choices concise on screen. Prefer the first complete clause.
+  let t=text.replace(/\s+/g," ").trim();
+  t=t.replace(/\s*[—–]\s*.*$/,"").trim();
+  t=t.replace(/\s*;\s*.*$/,"").trim();
+  t=t.replace(/\s*,\s*(dependendo|conforme|entre outras|além de|mas)\b.*$/i,"").trim();
+  if(t.length>92){
+    const cut=t.slice(0,92);
+    const lastSpace=cut.lastIndexOf(" ");
+    t=(lastSpace>55?cut.slice(0,lastSpace):cut).replace(/[,:;.-]+$/,"")+"…";
+  }
+  return t;
+}
+
+function answer(correct){
+ if(locked||!current)return;
+ locked=true;document.querySelectorAll(".answer").forEach(b=>b.disabled=true);
+ const p=players[turn];
+ if(correct){
+   p.score+=current.p;
+   document.getElementById("feedback").innerHTML=`<div class="feedback">✅ <b>Resposta correta.</b> +${current.p} pontos.<br><span class="rule">${escapeHtml(current.e)}</span></div>`;
+   document.getElementById("diceArea").classList.remove("hidden");
+   document.getElementById("roll").disabled=false;document.getElementById("die").textContent="🎲";render();
+ }else{
+   p.pos=Math.max(0,p.pos-1);
+   document.getElementById("feedback").innerHTML=`<div class="feedback">❌ <b>Resposta incorreta.</b> Você voltou <b>1 casa</b>.<br><span class="rule">${escapeHtml(current.e)}</span></div>`;
+   render();
+   setTimeout(endTurn,1100);
+ }
+}
+function rollDice(){
+ if(!locked||document.getElementById("roll").disabled)return;
+ document.getElementById("roll").disabled=true;
+ const d=Math.floor(Math.random()*6)+1;document.getElementById("die").textContent=DICE[d-1];
+ const p=players[turn];p.pos=Math.min(79,p.pos+d);
+ document.getElementById("feedback").innerHTML+=`<div class="feedback">🎲 Saiu <b>${d}</b>. ${escapeHtml(p.name)} avançou ${d} casa(s).</div>`;
+ render();
+ if(p.score>=200){setTimeout(finish,700);return}
+ setTimeout(endTurn,1000);
+}
+function endTurn(){
+ turn=(turn+1)%players.length;render();nextQuestion();
+}
+function finish(){
+ document.getElementById("questionCard").classList.add("hidden");
+ const order=[...players].sort((a,b)=>b.score-a.score);
+ const medals=["🥇","🥈","🥉","🏅"];
+ document.getElementById("podium").classList.remove("hidden");
+ document.getElementById("podium").innerHTML=`<h2>🏆 PÓDIO FINAL</h2>`+order.map((p,i)=>`<div class="rank"><span>${medals[i]} <b>${i+1}º ${escapeHtml(p.name)}</b></span><span>${p.score} pts • casa ${p.pos+1}</span></div>`).join("")+`<button class="btn start" onclick="restart()">Novo desafio</button>`;
+}
+</script>
+</body>
+</html>
